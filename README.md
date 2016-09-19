@@ -8,19 +8,15 @@ It is mainly for my coding practice to use api with ajax.
 
 This is one of the coding challenges at Free code camp (https://www.freecodecamp.com/challenges/show-the-local-weather).
 
-## Update
-Now I have rewritten the code to make it more object-oriented.
-Previously, it was written more in a procedural (or functional?) way.
-
 ## Requirements
 - You will need to sign up and get your own api key from the below website first.
 https://www.wunderground.com/api
-- After you get your own api key, you will need to use it to replace 'your-api-key-here' in the below code in the weather.js file (line 2 and line 32):
+- After you get your own api key, you will need to use it to replace 'your-api-key-here' in the below code in the weather.js file (line 29):
 ```
-$.get( "http://api.wunderground.com/api/your-api-key-here/conditions/q/autoip.json",
+$.get( "https://api.wunderground.com/api/your-api-key-here/geolookup/conditions/q/"+ ....
 ```
 
 ## Demo
 To see demo, please visit my codepen site.
-http://codepen.io/nfabacus/full/VjEaEX/
+https://codepen.io/nfabacus/full/VjEaEX/
 wl

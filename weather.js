@@ -1,45 +1,60 @@
-function LocalWeather() {
-    $.get( "http://api.wunderground.com/api/your-api-key-here/conditions/q/autoip.json", function( data ) {
-    var city = data.current_observation.display_location.city;
-    var icon_url = data.current_observation.icon_url;
-    var weather = "Sky is "+ data.current_observation.weather;
-    var windspeed = "Windspeed: " + data.current_observation.wind_kph + " kph";
-    $('#city').html(city);
-    console.log(icon_url);
-    $('#weatherIcon').attr('src', icon_url);
-    $('#weather').html(weather);
-    $('#windspeed').html(windspeed);
-  });
-  this.getTemp();
-}
+(function(){
+  var tempMode = "temp_c";
+  var degreeType = "\u00B0C";
+  var degreeTo = "Fahrenheit?";
+  var latiLongi ="";
 
-LocalWeather.prototype.toggleTemp = function() {
-    if(this.tempMode === "temp_c"){
-    this.tempMode = "temp_f";
-    this.degreeType = "\u00B0F";
-    this.degreeTo = "Celcius?";
-    $('#toggleTempBtn').html(this.degreeTo);
-  } else if (this.tempMode === "temp_f" || this.tempMode === undefined){
-    this.tempMode = "temp_c";
-    this.degreeType = "\u00B0C";
-    this.degreeTo = "Fahrenheit?";
-    $('#toggleTempBtn').html(this.degreeTo);
+  getLocation();
+
+  $('#toggleTempBtn').click(function(){
+    toggleTemp();
+  });
+
+  function getLocation() {
+    if(!navigator.geolocation) {
+       $("#message").html("Geolocation is not supported by this browser.");
+    }
+    navigator.geolocation.getCurrentPosition(success, error);
+
+    function success(position) {
+    latiLongi = position.coords.latitude + "," + position.coords.longitude;
+    updateWeather(latiLongi, degreeType);
+    }
+    function error() {
+      $("#message").html("Unable to retrieve your location.");
+    }
+  };
+
+  function updateWeather() {
+    $.get( "https://api.wunderground.com/api/your-api-key-here/geolookup/conditions/q/"+latiLongi+".json", function( data ) {
+        var city = data.location.city;
+        var icon_url = data.current_observation.icon_url;
+        var weather = "Sky is "+ data.current_observation.weather;
+        var windspeed = "Windspeed: " + data.current_observation.wind_kph + " kph";
+        var temperature = data.current_observation[tempMode];
+        $('#city').html(city);
+        $('#weatherIcon').attr('src', icon_url);
+        $('#weather').html(weather);
+        $('#windspeed').html(windspeed);
+        $('#temperature').html(temperature);
+        $('#degreeType').html(degreeType);
+        $('#toggleTempBtn').html(degreeTo);
+    });
   }
-  return [ this.tempMode, this.degreeType, this.degreeTo ];
-};
 
-LocalWeather.prototype.getTemp = function() {
-  $.get( "http://api.wunderground.com/api/your-api-key-here/conditions/q/autoip.json", function( data ) {
-    var tempArr = weather.toggleTemp();
-    var temperature = data.current_observation[tempArr[0]];
-    $('#temperature').html(temperature);
-    $('#degreeType').html(tempArr[1]);
-    $('#toggleTempBtn').html(tempArr[2]);
-  });
-};
+  function toggleTemp () {
+      if(tempMode === "temp_c"){
+        tempMode = "temp_f";
+        degreeType = "\u00B0F";
+        degreeTo = "Celcius?";
+      $('#toggleTempBtn').html(degreeTo);
+    } else if (tempMode === "temp_f" || tempMode === undefined){
+      tempMode = "temp_c";
+      degreeType = "\u00B0C";
+      degreeTo = "Fahrenheit?";
+      $('#toggleTempBtn').html(degreeTo);
+    }
+    updateWeather();
+  };
 
-weather = new LocalWeather();
-
-$('#toggleTempBtn').click(function(){
-  weather.getTemp();
-});
+})();
